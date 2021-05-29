@@ -21,7 +21,7 @@
         margin-left: 20px;
         }
     </style>
-
+    <script type="text/javascript" src="instascan.min.js"></script>
     <script>
 
         const api_invoke_url = "https://3grz610kr9.execute-api.ap-southeast-1.amazonaws.com/dev";
@@ -45,19 +45,39 @@
             // make API call with parameters and use promises to get response
             fetch(api_invoke_url, requestOptions)
             .then(response => response.text())
-            // .then(result => alert(JSON.parse(result).body))
+            //.then(result => alert(JSON.parse(result).body))
             .then(result => window.location.href = JSON.parse(result).body)
             .catch(error => console.log('error', error));
         }
+
+        let callQRScanner = ()=>{ 
+            new Instascan.Scanner({ video: document.getElementById('preview') });
+            scanner.addListener('scan', function (content) {
+                console.log(content);
+            });
+            Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+                } else {
+                console.error('No cameras found.');
+                }
+            }).catch(function (e) {
+                console.error(e);
+            });
+        }
+
     </script>
     
 </head>
 <body>
+    <video id="preview"></video>
+
     <form>
         <label>URL of pdf :</label>
         <input type="text" id="url">
         <!-- set button onClick method to call function we defined passing input values as parameters -->
         <button type="button" onclick="callAPI(document.getElementById('url').value)">Go to Appended URL</button>
+        <button type="button" onclick="callQRScanner">Call Scanner</button>
     </form>
 </body>
 </html>
