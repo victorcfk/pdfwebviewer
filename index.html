@@ -28,13 +28,16 @@
         //https://3grz610kr9.execute-api.ap-southeast-1.amazonaws.com/dev
         //Amazon Resource Name (ARN) arn:aws:dynamodb:ap-southeast-1:845978431642:table/pdfwebviewer_urltable
         // define the callAPI function that takes a first name and last name as parameters
-        var callAPI = (url)=>{
+        let callAPI = (url)=>{
+
+            let parsed_url = regexParser(url);
+
             // instantiate a headers object
             var myHeaders = new Headers();
             // add content type header to object
             myHeaders.append("Content-Type", "application/json");
             // using built in JSON utility package turn object to string and store in a variable
-            var raw = JSON.stringify({"url":url});
+            var raw = JSON.stringify({"url":parsed_url});
             // create a JSON object with parameters for API call and store in a variable
             var requestOptions = {
                 method: 'POST',
@@ -48,6 +51,32 @@
             //.then(result => alert(JSON.parse(result).body))
             .then(result => window.location.href = JSON.parse(result).body)
             .catch(error => console.log('error', error));
+        }
+
+        let callURLAppender = (url) =>{
+            const google_docs_url = `https://docs.google.com/viewer?url=`;
+            let parsed_url = regexParser(url);
+            let final_url = `${google_docs_url}${parsed_url}`;
+
+            console.log(final_url);
+            
+            window.location.href = final_url;
+
+            return final_url;
+        };
+
+        let regexParser= (url) => {
+
+            //find the last occurrence of http that is followed by a .pdf
+            const regex1 = RegExp('http(?!.*http).+\.pdf', 'g');
+            const match = regex1.exec(url)
+
+            if(match == null || match.length === 0)
+            {
+                throw Error("no pdf");
+            }
+            
+            return match[0];
         }
 
         let callQRScanner = () => {
@@ -105,16 +134,14 @@
                 console.error(e);
             });
             document.getElementById('qr_url').innerHTML = `No url scanned successfully yet`;
-            
         }
-        
-        callQRScanner();
+        //callQRScanner();
     </script>
 
 </head>
 
 <body>
-    
+
     <form>
         <div>
         <label>URL of pdf to append:</label>
@@ -122,7 +149,7 @@
         </div>
         <!-- set button onClick method to call function we defined passing input values as parameters -->
         <div>
-            <button type="button" onclick="callAPI(document.getElementById('url').value)">Go to Appended URL</button>
+            <button type="button" onclick="callURLAppender(document.getElementById('url').value)">Go to Appended URL</button>
         </div>
         <br>
         <br>
