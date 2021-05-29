@@ -60,6 +60,9 @@
 
             console.log(final_url);
             
+            constructed_url
+            document.getElementById('constructed_url').innerHTML = final_url;
+
             window.location.href = final_url;
 
             return final_url;
@@ -150,6 +153,8 @@
         <!-- set button onClick method to call function we defined passing input values as parameters -->
         <div>
             <button type="button" onclick="callURLAppender(document.getElementById('url').value)">Go to Appended URL</button>
+            <br>
+            <label id="constructed_url"></label>
         </div>
         <br>
         <br>
