@@ -85,6 +85,6 @@ function mainUI(){
 // ========================================
 
 ReactDOM.render(
-  <Game />,
+  <mainUI />,
   document.getElementById('root')
 );
