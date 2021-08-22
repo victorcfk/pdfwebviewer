@@ -1,11 +1,12 @@
 import React from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
+import Utility from './Utility';
 import './App.css';
 const { useState, useEffect } = React;
 
 function App() {
 
-  const[PDFUrl, setPDFUrl] = useState('https://bitcoin.org/bitcoin.pdf');
+  const[PDFUrl, setPDFUrl] = useState('');
   //https://www.guitar.ch/tabs-pdf/tabs.php?pdf=Beatles/Something
 
   // useEffect(
@@ -24,30 +25,25 @@ function App() {
           <div>
           <input 
             value={PDFUrl} 
-            placeholder="https://bitcoin.org/bitcoin.pdf" 
+            placeholder="Please enter your URL" 
             onInput={e => setPDFUrl(e.target.value)}/>
 
           <button 
-            onClick = {() => {googleDocAppender(PDFUrl);} }
+            onClick = {() => {
+              //go the the window in the link
+              window.location.href = Utility.googleDocAppender(PDFUrl);
+            } }
             className="submit-button" type="submit">
             {'Go to web view of PDF'}
           </button>
+          <br></br>
+          <br></br>
+          <br></br>
+          <label>{`Sample url https://bitcoin.org/bitcoin.pdf`}</label>
 
       </div>
     </div>
   );
-}
-
-function googleDocAppender(url){
-
-  console.log(url);
-
-  const google_docs_url = `https://docs.google.com/viewer?url=`;
-  let final_url = `${google_docs_url}${url}`;
-  console.log(final_url);
-  window.location.href = final_url;
-  //pdfjs(final_url);
-  return final_url;
 }
 
 export default App;
