@@ -19,7 +19,6 @@ function App() {
   //http://mozilla.github.io/pdf.js/web/viewer.html?file=https://bitcoin.org/bitcoin.pdf
 
   const google_docs_url = `https://docs.google.com/viewer?url=`;
-  const mozilla_url = `http://mozilla.github.io/pdf.js/web/viewer.html?file=`;
   const mozilla_url = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
 
   const NEW_WINDOW_CLICK = "NEW_WINDOW";
@@ -78,10 +77,8 @@ function App() {
           >
             {"Open in iframe"}
           </button>
-
           <br></br>
           <br></br>
-    
           <label>{`Sample url https://bitcoin.org/bitcoin.pdf`}</label>
         </div>
       </div>
