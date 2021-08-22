@@ -1,4 +1,132 @@
 // import instascan from './instascan.min.js';
+//require('./pdf.js');
+
+const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+
+class Utility {
+  static googleDocAppender(url) {
+    console.log(`url: `, url);
+    url = regexParser(url);
+    console.log(`parsed url: `, url);
+
+    const google_docs_url = `https://docs.google.com/viewer?url=`;
+    url = `${google_docs_url}${url}`;
+    console.log(`final url: `, url);
+
+    return url;
+  }
+
+  static callInFramePDFViewer(url) {
+    console.log(url);
+    url = regexParser(url);
+    console.log(`parsed url: `, url);
+
+    document.getElementById("my_pdf_viewer").style.display = "block";
+    document.getElementById("constructed_url").innerHTML = url;
+
+    var myState = {
+      pdf: null,
+      currentPage: 1,
+      zoom: 1,
+    };
+
+    pdfjsLib.getDocument(url).then((pdf) => {
+      myState.pdf = pdf;
+      render();
+    });
+
+    function render() {
+      myState.pdf.getPage(myState.currentPage).then((page) => {
+        var canvas = document.getElementById("pdf_renderer");
+        var ctx = canvas.getContext("2d");
+
+        var viewport = page.getViewport(myState.zoom);
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        page.render({
+          canvasContext: ctx,
+          viewport: viewport,
+        });
+      });
+    }
+
+    //pdf viewer go previous button
+    document.getElementById("go_previous").addEventListener("click", (e) => {
+      if (myState.pdf == null || myState.currentPage == 1) return;
+      myState.currentPage -= 1;
+      document.getElementById("current_page").value = myState.currentPage;
+      render();
+    });
+
+    //pdf viewer go next button
+    document.getElementById("go_next").addEventListener("click", (e) => {
+      if (
+        myState.pdf == null ||
+        myState.currentPage > myState.pdf._pdfInfo.numPages
+      ) {
+        return;
+      }
+      myState.currentPage += 1;
+      document.getElementById("current_page").value = myState.currentPage;
+      render();
+    });
+
+    //pdf viewer go current button
+    document
+      .getElementById("current_page")
+      .addEventListener("keypress", (e) => {
+        if (myState.pdf == null) return;
+
+        // Get key code
+        var code = e.keyCode ? e.keyCode : e.which;
+
+        // If key code matches that of the Enter key
+        if (code == 13) {
+          var desiredPage =
+            document.getElementById("current_page").valueAsNumber;
+
+          if (
+            desiredPage >= 1 &&
+            desiredPage <= myState.pdf._pdfInfo.numPages
+          ) {
+            myState.currentPage = desiredPage;
+            document.getElementById("current_page").value = desiredPage;
+            render();
+          }
+        }
+      });
+
+    document.getElementById("zoom_in").addEventListener("click", (e) => {
+      if (myState.pdf == null) return;
+      myState.zoom += 0.5;
+      render();
+    });
+
+    
+
+    document.getElementById("zoom_out").addEventListener("click", (e) => {
+      if (myState.pdf == null) return;
+      myState.zoom -= 0.5;
+      render();
+    });
+  }
+}
+
+function regexParser(url) {
+  //find the last occurrence of http that is followed by a .pdf
+  const regex1 = RegExp("http(?!.*http).+.pdf", "g");
+  const match = regex1.exec(url);
+
+  if (match == null || match.length === 0) {
+    throw Error(`Did not find a valid pdf url link in : "${url}"`);
+  }
+  return match[0];
+}
+
+module.exports = Utility;
+
 
 // define the callAPI function that takes a first name and last name as parameters
 // Fix for the url, to download the url and cache the file on my webpage
@@ -24,119 +152,6 @@
 //         //.then(result => alert(JSON.parse(result).body))
 //         .then(result => window.location.href = JSON.parse(result).body)
 //         .catch(error => console.log('error', error));
-// }
-class Utility {
-  static googleDocAppender(url) {
-    console.log(`url: `, url);
-    url = regexParser(url);
-    console.log(`parsed url: `, url);
-
-    const google_docs_url = `https://docs.google.com/viewer?url=`;
-    url = `${google_docs_url}${url}`;
-    console.log(`final url: `, url);
-
-    return url;
-  }
-}
-
-function regexParser(url) {
-  //find the last occurrence of http that is followed by a .pdf
-  const regex1 = RegExp("http(?!.*http).+.pdf", "g");
-  const match = regex1.exec(url);
-
-  if (match == null || match.length === 0) {
-    throw Error(`Did not find a valid pdf url link in : "${url}"`);
-  }
-  return match[0];
-}
-
-module.exports = Utility;
-
-// let callInFramePDFViewer = (url) => {
-//     console.log(url);
-
-//     document.getElementById('my_pdf_viewer').style.display = "block";
-//     document.getElementById('constructed_url').innerHTML = url;
-
-//     var myState = {
-//         pdf: null,
-//         currentPage: 1,
-//         zoom: 1
-//     }
-
-//     pdfjsLib.getDocument(url).then((pdf) => {
-//         myState.pdf = pdf;
-//         render();
-//     });
-
-//     function render() {
-//         myState.pdf.getPage(myState.currentPage).then((page) => {
-
-//             var canvas = document.getElementById("pdf_renderer");
-//             var ctx = canvas.getContext('2d');
-
-//             var viewport = page.getViewport(myState.zoom);
-
-//             canvas.width = viewport.width;
-//             canvas.height = viewport.height;
-
-//             page.render({
-//                 canvasContext: ctx,
-//                 viewport: viewport
-//             });
-//         });
-//     }
-
-//     //pdf viewer go previous button
-//     document.getElementById('go_previous').addEventListener('click', (e) => {
-//         if (myState.pdf == null || myState.currentPage == 1)
-//             return;
-//         myState.currentPage -= 1;
-//         document.getElementById("current_page").value = myState.currentPage;
-//         render();
-//     });
-
-//     //pdf viewer go next button
-//     document.getElementById('go_next').addEventListener('click', (e) => {
-//         if (myState.pdf == null || myState.currentPage > myState.pdf._pdfInfo.numPages) {
-//             return;
-//         }
-//         myState.currentPage += 1;
-//         document.getElementById("current_page").value = myState.currentPage;
-//         render();
-//     });
-
-//     //pdf viewer go current button
-//     document.getElementById('current_page').addEventListener('keypress', (e) => {
-//         if (myState.pdf == null) return;
-
-//         // Get key code
-//         var code = (e.keyCode ? e.keyCode : e.which);
-
-//         // If key code matches that of the Enter key
-//         if (code == 13) {
-//             var desiredPage =
-//                 document.getElementById('current_page').valueAsNumber;
-
-//             if (desiredPage >= 1 && desiredPage <= myState.pdf._pdfInfo.numPages) {
-//                 myState.currentPage = desiredPage;
-//                 document.getElementById("current_page").value = desiredPage;
-//                 render();
-//             }
-//         }
-//     });
-
-//     document.getElementById('zoom_in').addEventListener('click', (e) => {
-//         if (myState.pdf == null) return;
-//         myState.zoom += 0.5;
-//         render();
-//     });
-
-//     document.getElementById('zoom_out').addEventListener('click', (e) => {
-//         if (myState.pdf == null) return;
-//         myState.zoom -= 0.5;
-//         render();
-//     });
 // }
 
 //
