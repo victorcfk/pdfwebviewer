@@ -1,7 +1,7 @@
 // import instascan from './instascan.min.js';
 //require('./pdf.js');
 
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+// const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 
 export default class Utility {
 
@@ -15,8 +15,21 @@ export default class Utility {
 
     return url;
   }
+}
 
-  static callInFramePDFViewer(url) {
+function regexParser(url) {
+  //find the last occurrence of http that is followed by a .pdf
+  const regex1 = RegExp("http(?!.*http).+.pdf", "g");
+  const match = regex1.exec(url);
+
+  if (match === null || match.length === 0) {
+    throw Error(`Did not find a valid pdf url link in : "${url}"`);
+  }
+  return match[0];
+}
+
+/*
+ static callInFramePDFViewer(url) {
     console.log(url);
     url = regexParser(url);
     console.log(`parsed url: `, url);
@@ -112,19 +125,7 @@ export default class Utility {
       render();
     });
   }
-}
-
-function regexParser(url) {
-  //find the last occurrence of http that is followed by a .pdf
-  const regex1 = RegExp("http(?!.*http).+.pdf", "g");
-  const match = regex1.exec(url);
-
-  if (match == null || match.length === 0) {
-    throw Error(`Did not find a valid pdf url link in : "${url}"`);
-  }
-  return match[0];
-}
-
+*/
 // define the callAPI function that takes a first name and last name as parameters
 // Fix for the url, to download the url and cache the file on my webpage
 // let callAPI = (url) => {

@@ -18,8 +18,8 @@ function App() {
   //https://www.guitar.ch/tabs-pdf/tabs.php?pdf=Beatles/Something
   //http://mozilla.github.io/pdf.js/web/viewer.html?file=https://bitcoin.org/bitcoin.pdf
 
-  const google_docs_url = `https://docs.google.com/viewer?url=`;
-  const mozilla_url = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
+  // const GOOGLE_DOCS_URL = `https://docs.google.com/viewer?url=`;
+  const MOZILLA_URL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
 
   const NEW_WINDOW_CLICK = "NEW_WINDOW";
   const IFRAME_CLICK = "IFRAME";
@@ -27,10 +27,10 @@ function App() {
   useEffect(() => {
     try {
       if (btnTypeClicked === NEW_WINDOW_CLICK) {
-        const appendedURL = Utility.urlAppender(mozilla_url, PDFUrl);
+        const appendedURL = Utility.urlAppender(MOZILLA_URL, PDFUrl);
         window.location.href = appendedURL;
       } else if (btnTypeClicked === IFRAME_CLICK) {
-        const appendedURL = Utility.urlAppender(mozilla_url, PDFUrl);
+        const appendedURL = Utility.urlAppender(MOZILLA_URL, PDFUrl);
         setIFrameLink(appendedURL);
       }
     } catch (e) {
@@ -41,7 +41,7 @@ function App() {
     setBtnTypeClicked("");
 
     return () => {};
-  }, [PDFUrl, btnTypeClicked, errorMsg]);
+  }, [PDFUrl, btnTypeClicked, errorMsg, MOZILLA_URL]);
 
   return (
     <div className="App">
@@ -83,7 +83,7 @@ function App() {
         </div>
       </div>
       <div height={0.75 * height}>
-        <iframe src={iFrameLink} width={width} height={0.75 * height}></iframe>
+        <iframe title='pdflink' src={iFrameLink} width={width} height={0.75 * height}></iframe>
       </div>
     </div>
   );
