@@ -3,14 +3,14 @@
 
 const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 
-class Utility {
-  static googleDocAppender(url) {
+export default class Utility {
+
+  static urlAppender(prepend, url) {
     console.log(`url: `, url);
     url = regexParser(url);
     console.log(`parsed url: `, url);
 
-    const google_docs_url = `https://docs.google.com/viewer?url=`;
-    url = `${google_docs_url}${url}`;
+    url = `${prepend}${url}`;
     console.log(`final url: `, url);
 
     return url;
@@ -124,9 +124,6 @@ function regexParser(url) {
   }
   return match[0];
 }
-
-module.exports = Utility;
-
 
 // define the callAPI function that takes a first name and last name as parameters
 // Fix for the url, to download the url and cache the file on my webpage
