@@ -20,6 +20,7 @@ function App() {
 
   const google_docs_url = `https://docs.google.com/viewer?url=`;
   const mozilla_url = `http://mozilla.github.io/pdf.js/web/viewer.html?file=`;
+  const mozilla_url = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
 
   const NEW_WINDOW_CLICK = "NEW_WINDOW";
   const IFRAME_CLICK = "IFRAME";
