@@ -16,10 +16,10 @@ function App() {
   const { width, height } = useWindowDimensions();
 
   //https://www.guitar.ch/tabs-pdf/tabs.php?pdf=Beatles/Something
-  //http://mozilla.github.io/pdf.js/web/viewer.html?file=https://bitcoin.org/bitcoin.pdf
+  //https://mozilla.github.io/pdf.js/web/viewer.html?file=https://bitcoin.org/bitcoin.pdf
 
-  // const GOOGLE_DOCS_URL = `https://docs.google.com/viewer?url=`;
-  const MOZILLA_URL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
+  const GOOGLE_DOCS_URL = `https://docs.google.com/viewer?url=`;
+  //const MOZILLA_URL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
 
   const NEW_WINDOW_CLICK = "NEW_WINDOW";
   const IFRAME_CLICK = "IFRAME";
@@ -27,10 +27,10 @@ function App() {
   useEffect(() => {
     try {
       if (btnTypeClicked === NEW_WINDOW_CLICK) {
-        const appendedURL = Utility.urlAppender(MOZILLA_URL, PDFUrl);
+        const appendedURL = Utility.urlAppender(GOOGLE_DOCS_URL, PDFUrl);
         window.location.href = appendedURL;
       } else if (btnTypeClicked === IFRAME_CLICK) {
-        const appendedURL = Utility.urlAppender(MOZILLA_URL, PDFUrl);
+        const appendedURL = Utility.urlAppender(GOOGLE_DOCS_URL, PDFUrl);
         setIFrameLink(appendedURL);
       }
     } catch (e) {
@@ -41,7 +41,7 @@ function App() {
     setBtnTypeClicked("");
 
     return () => {};
-  }, [PDFUrl, btnTypeClicked, errorMsg, MOZILLA_URL]);
+  }, [PDFUrl, btnTypeClicked, errorMsg, GOOGLE_DOCS_URL]);
 
   return (
     <div className="App">
