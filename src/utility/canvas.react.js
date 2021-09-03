@@ -13,9 +13,8 @@ const Canvas = (props) => {
 
   function render(canvas){
     myState.pdf.getPage(myState.currentPage).then((page) => {
-      debugger;
+
       const ctx = canvas.getContext("2d");
-      
       // ctx.fillStyle = '#000000'
       //   ctx.beginPath()
       //   ctx.arc(50, 100, 20, 0, 2*Math.PI)
