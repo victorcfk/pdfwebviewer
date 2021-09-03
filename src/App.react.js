@@ -81,7 +81,7 @@ function App() {
         </div>
       </div>
       <div height={0.75 * height}>
-        <Canvas></Canvas>
+        <Canvas pdfpath="./bitcoin.pdf"></Canvas>
       </div>
     </div>
   );

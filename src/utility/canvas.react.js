@@ -1,53 +1,54 @@
-import React, { useRef, useEffect } from "react";
+
+import React from 'react'
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf'
 import PDFJSWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry'
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
 
-const Canvas = (props) => {
+const { useRef, useState, useEffect, useCallback } = React;
+
+function Canvas(props){
   const canvasRef = useRef(null);
-  const myState = {
-    pdf: null,
-    currentPage: 1,
-    zoom: 1,
-  };
 
-  function render(canvas){
-    myState.pdf.getPage(myState.currentPage).then((page) => {
-
-      const ctx = canvas.getContext("2d");
-      // ctx.fillStyle = '#000000'
-      //   ctx.beginPath()
-      //   ctx.arc(50, 100, 20, 0, 2*Math.PI)
-      //   ctx.fill();
-      const viewport = page.getViewport(myState.zoom);
-      viewport.width = 612;
-      viewport.height = 792;
-
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      page.render({
-        canvasContext: ctx,
-        viewport: viewport,
-      });
-    });
-
-  }
-  const draw = (canvas) => {
-
-    pdfjsLib.getDocument("./bitcoin.pdf").promise.then((pdf) => {
-      myState.pdf = pdf;
-      render(canvas);
-    });
-    
-  };
+  const [pdfPath,setPdfPath] = useState("");
+  // const [canvas,setCanvas] = useState(null);
+  
+  const [pdf,setPdf] = useState(null);
+  const [currentPage,setCurrentPage] = useState(1);
+  const [zoom,setZoom] = useState(1);
+  
+  // useEffect(() => {
+  //     render();
+  // }, [currentPage,zoom, render]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+
+    pdfjsLib.getDocument(props.pdfpath).promise.then((pdf_new) => {
+      // setCanvas();
+      setPdf(pdf_new);
+      render();
+
+
+      function render (){
+        if(!pdf)  return;
     
-    //Our draw come here
-    draw(canvas);
-  }, [draw]);
+        pdf.getPage(currentPage).then((page) => {
+          
+          const viewport = page.getViewport(zoom);
+          viewport.width = 612;
+          viewport.height = 792;
+          canvasRef.current.width = viewport.width;
+          canvasRef.current.height = viewport.height;
+    
+          page.render({
+            canvasContext: canvasRef.current.getContext("2d"),
+            viewport: viewport,
+          });
+        });
+      };
+
+    });
+    
+  }, [props.pdfpath,currentPage,pdf,zoom]);
 
   return <canvas ref={canvasRef} {...props} />;
 };
