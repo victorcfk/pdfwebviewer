@@ -1,98 +1,124 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+  
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>PDF Web Viewer</title>
-    <!-- Add some CSS to change client UI -->
-    <style>
-        body {
-            background-color: #232F3E;
-        }
-
-        label,
-        button {
-            color: #FF9900;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 20px;
-            margin-left: 40px;
-        }
-
-        input {
-            color: #232F3E;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 20px;
-            margin-left: 20px;
-        }
-
-        #canvas_container {
-            width: -webkit-fill-available;
-            height: -webkit-fill-available;
-            overflow: auto;
-        }
-
-        #my_pdf_viewer {
-            display: none;
-        }
-    </style>
-    <script type="text/javascript" src="instascan.min.js"></script>
-    <!-- <script src="pdf.min.js"></script> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js"></script>
-    <script src="js/main.js"></script>
-   
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My PDF Viewer</title>
+  <script
+    src="http://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js">
+  </script>
+ 
+  <style>
+      #canvas_container {
+          width: 800px;
+          height: 450px;
+          overflow: auto;
+      }
+ 
+      #canvas_container {
+        background: #333;
+        text-align: center;
+        border: solid 3px;
+      }
+  </style>
 </head>
-
 <body>
-    <form>
-        <div>
-            <label>URL of pdf to append:</label>
-            <input type="text" id="url">
-        </div>
-        
-        <div>
-            <button type="button"
-                onclick="callGoogleViewerURLAppender(regexParser(document.getElementById('url').value))">
-                Google View PDF</button>
-            <button type="button"
-                onclick="callInFramePDFViewer(regexParser(document.getElementById('url').value))">
-                Render in Frame</button>
-            <br>
-            <label id="constructed_url"></label>
-        </div>
-    </form>
-    <hr class="dashed">
-    <form>
-        <div>
-            <button type="button" onclick="callQRScanner()">Call Scanner</button>
-            <br>
-            <label id="qr_url"></label>
-        </div>
-
-        <div>
-            <video id="preview"></video>
-        </div>
-    </form>
-
-    <hr class="dashed">
-
-    <div id="my_pdf_viewer">
-        <div id="navigation_controls">
-            <button id="go_previous">Previous</button>
-            <input id="current_page" value="1" type="number" />
-            <button id="go_next">Next</button>
-        </div>
-
-        <div id="zoom_controls">
-            <button id="zoom_in">+</button>
-            <button id="zoom_out">-</button>
-        </div>
-
+     <div id="my_pdf_viewer">
         <div id="canvas_container">
             <canvas id="pdf_renderer"></canvas>
         </div>
+ 
+        <div id="navigation_controls">
+            <button id="go_previous">Previous</button>
+            <input id="current_page" value="1" type="number"/>
+            <button id="go_next">Next</button>
+        </div>
+ 
+        <div id="zoom_controls">  
+            <button id="zoom_in">+</button>
+            <button id="zoom_out">-</button>
+        </div>
     </div>
-
+ 
+    <script>
+        var myState = {
+            pdf: null,
+            currentPage: 1,
+            zoom: 1
+        }
+      
+        pdfjsLib.getDocument('https://barossa.com.sg/wp-content/uploads/2013/10/Barossa-VivoCity_Dinner-Menu-2020.pdf').then((pdf) => {
+      
+            myState.pdf = pdf;
+            render();
+ 
+        });
+ 
+        function render() {
+            myState.pdf.getPage(myState.currentPage).then((page) => {
+          
+                var canvas = document.getElementById("pdf_renderer");
+                var ctx = canvas.getContext('2d');
+      
+                var viewport = page.getViewport(myState.zoom);
+ 
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+          
+                page.render({
+                    canvasContext: ctx,
+                    viewport: viewport
+                });
+            });
+        }
+ 
+        document.getElementById('go_previous').addEventListener('click', (e) => {
+            if(myState.pdf == null || myState.currentPage == 1) 
+              return;
+            myState.currentPage -= 1;
+            document.getElementById("current_page").value = myState.currentPage;
+            render();
+        });
+ 
+        document.getElementById('go_next').addEventListener('click', (e) => {
+            if(myState.pdf == null || myState.currentPage > myState.pdf._pdfInfo.numPages) 
+               return;
+            myState.currentPage += 1;
+            document.getElementById("current_page").value = myState.currentPage;
+            render();
+        });
+ 
+        document.getElementById('current_page').addEventListener('keypress', (e) => {
+            if(myState.pdf == null) return;
+          
+            // Get key code
+            var code = (e.keyCode ? e.keyCode : e.which);
+          
+            // If key code matches that of the Enter key
+            if(code == 13) {
+                var desiredPage = 
+                document.getElementById('current_page').valueAsNumber;
+                                  
+                if(desiredPage >= 1 && desiredPage <= myState.pdf._pdfInfo.numPages) {
+                    myState.currentPage = desiredPage;
+                    document.getElementById("current_page").value = desiredPage;
+                    render();
+                }
+            }
+        });
+ 
+        document.getElementById('zoom_in').addEventListener('click', (e) => {
+            if(myState.pdf == null) return;
+            myState.zoom += 0.5;
+            render();
+        });
+ 
+        document.getElementById('zoom_out').addEventListener('click', (e) => {
+            if(myState.pdf == null) return;
+            myState.zoom -= 0.5;
+            render();
+        });
+    </script>
 </body>
-
 </html>
-<!-- python3 -m http.server -->

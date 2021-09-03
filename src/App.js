@@ -1,7 +1,7 @@
 import React from "react";
 import useWindowDimensions from "./utility/useWindowDimensions.react";
 import Utility from "./Utility";
-// import logo from './logo.svg';
+import Canvas from "./utility/canvas.react";
 
 import "./App.css";
 const { useState, useEffect } = React;
@@ -15,11 +15,9 @@ function App() {
 
   const { width, height } = useWindowDimensions();
 
-  //https://www.guitar.ch/tabs-pdf/tabs.php?pdf=Beatles/Something
   //https://mozilla.github.io/pdf.js/web/viewer.html?file=https://bitcoin.org/bitcoin.pdf
-
   const GOOGLE_DOCS_URL = `https://docs.google.com/viewer?url=`;
-  //const MOZILLA_URL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
+  const MOZILLA_URL = `https://mozilla.github.io/pdf.js/web/viewer.html?file=`;
 
   const NEW_WINDOW_CLICK = "NEW_WINDOW";
   const IFRAME_CLICK = "IFRAME";
@@ -83,10 +81,12 @@ function App() {
         </div>
       </div>
       <div height={0.75 * height}>
-        <iframe title='pdflink' src={iFrameLink} width={width} height={0.75 * height}></iframe>
+        <Canvas></Canvas>
       </div>
     </div>
   );
 }
 
 export default App;
+
+

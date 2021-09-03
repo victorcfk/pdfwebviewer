@@ -1,32 +1,77 @@
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
-//import PDFViewer from './components/PDFViewer/PDFViewer.react';
-//import PDFJSBackEnd from '../old/pdf';
-export default class PDFJs{
-    init (source, element){
-
-        // const textNode = document.createElement('p');
-
-        // textNode.innerHTML = `our pdf source is ${source}`;
-
-        // element(textNode);
-        // ReactDOM.render(element, textNode);
-
-        // return <div>{`our pdf source is ${source}`}</div>;
-
-        // const iframe = document.createElement('iframe');
-        // iframe.src = `/pdfjs-1.9.426-dist/web/viewer.html?file=${source}`;
-        // iframe.width = '100%';
-        // iframe.height = '100%';
-
-        // element.append(iframe);
-//http://mozilla.github.io/pdf.js/web/viewer.html?file=https://bitcoin.org/bitcoin.pdf
-        return <iframe src = 'https://www.youtube.com/embed/cWDJoK8zw58' ></iframe>
-
-    }
+var myState = {
+    pdf: null,
+    currentPage: 1,
+    zoom: 1
 }
 
-//https://www.pdftron.com/blog/react/how-to-build-a-react-pdf-viewer/
+pdfjsLib.getDocument('./my_document.pdf').then((pdf) => {
 
-// const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
+    myState.pdf = pdf;
+    render();
 
-// const { useState, useEffect } = React;
+});
+
+function render() {
+    myState.pdf.getPage(myState.currentPage).then((page) => {
+  
+        var canvas = document.getElementById("pdf_renderer");
+        var ctx = canvas.getContext('2d');
+
+        var viewport = page.getViewport(myState.zoom);
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+  
+        page.render({
+            canvasContext: ctx,
+            viewport: viewport
+        });
+    });
+}
+
+document.getElementById('go_previous').addEventListener('click', (e) => {
+    if(myState.pdf == null || myState.currentPage == 1) 
+      return;
+    myState.currentPage -= 1;
+    document.getElementById("current_page").value = myState.currentPage;
+    render();
+});
+
+document.getElementById('go_next').addEventListener('click', (e) => {
+    if(myState.pdf == null || myState.currentPage > myState.pdf._pdfInfo.numPages) 
+       return;
+    myState.currentPage += 1;
+    document.getElementById("current_page").value = myState.currentPage;
+    render();
+});
+
+document.getElementById('current_page').addEventListener('keypress', (e) => {
+    if(myState.pdf == null) return;
+  
+    // Get key code
+    var code = (e.keyCode ? e.keyCode : e.which);
+  
+    // If key code matches that of the Enter key
+    if(code == 13) {
+        var desiredPage = 
+        document.getElementById('current_page').valueAsNumber;
+                          
+        if(desiredPage >= 1 && desiredPage <= myState.pdf._pdfInfo.numPages) {
+            myState.currentPage = desiredPage;
+            document.getElementById("current_page").value = desiredPage;
+            render();
+        }
+    }
+});
+
+document.getElementById('zoom_in').addEventListener('click', (e) => {
+    if(myState.pdf == null) return;
+    myState.zoom += 0.5;
+    render();
+});
+
+document.getElementById('zoom_out').addEventListener('click', (e) => {
+    if(myState.pdf == null) return;
+    myState.zoom -= 0.5;
+    render();
+});
