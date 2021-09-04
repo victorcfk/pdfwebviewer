@@ -119,20 +119,20 @@ function Canvas(props) {
 
       <div id="zoom_controls">
         <button
-          id="zoom_in"
-          onClick={() => {
-            setZoom(zoom + 0.1);
-          }}
-        >
-          +
-        </button>
-        <button
           id="zoom_out"
           onClick={() => {
-            setZoom(zoom - 0.1);
+            setZoom(Math.max(zoom - 0.1,0.5));
           }}
         >
           -
+        </button>
+        <button
+          id="zoom_in"
+          onClick={() => {
+            setZoom(Math.min(zoom + 0.1,2.0));
+          }}
+        >
+          +
         </button>
       </div>
     </div>
