@@ -12,7 +12,6 @@ function App() {
   const [iFrameLink, setIFrameLink] = useState("");
 
   const [btnTypeClicked, setBtnTypeClicked] = useState("");
-  const [errorMsg, setErrorMsg] = useState(null);
 
   const { width, height } = useWindowDimensions();
 
@@ -33,20 +32,19 @@ function App() {
       }
     } catch (e) {
       console.log(e);
-      setErrorMsg(e);
+      alert(e);
     }
 
     setBtnTypeClicked("");
 
     return () => {};
-  }, [PDFUrl, btnTypeClicked, errorMsg, GOOGLE_DOCS_URL]);
+  }, [PDFUrl, btnTypeClicked, GOOGLE_DOCS_URL]);
 
   return (
     <div className="App">
       <div height={0.25 * height}>
         <label>You will go to the URL at: </label>
         <label>{PDFUrl}</label>
-        {(errorMsg !== null)? <div>{errorMsg.message}</div>: <div></div>}
         <br></br>
         <br></br>
         <div>
@@ -56,20 +54,14 @@ function App() {
             onInput={(e) => setPDFUrl(e.target.value)}
           />
           <button
-            onClick={() => {
-              setBtnTypeClicked(NEW_WINDOW_CLICK);
-              setErrorMsg(null);
-            }}
+            onClick={() => setBtnTypeClicked(NEW_WINDOW_CLICK)}
             className="submit-button"
             type="submit"
           >
             {"Go to web view of PDF"}
           </button>
           <button
-            onClick={() => {
-              setBtnTypeClicked(IFRAME_CLICK);
-              setErrorMsg(null);
-            }}
+            onClick={() => setBtnTypeClicked(IFRAME_CLICK)}
             className="submit-button"
             type="submit"
           >
