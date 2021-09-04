@@ -1,7 +1,7 @@
 import React from "react";
-import useWindowDimensions from "./utility/useWindowDimensions.react";
-import Utility from "./Utility";
-import Canvas from "./utility/canvas.react";
+import useWindowDimensions from "./utility/UseWindowDimensions.react";
+import Utility from "./utility/Utility";
+import Canvas from "./utility/PdfLoader.react";
 
 import "./App.css";
 const { useState, useEffect } = React;

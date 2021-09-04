@@ -40,10 +40,9 @@ export default class Utility {
         callback(e.currentTarget.response);
     };
   
-    xhr.onerror = function  (e) {
+    xhr.onerror = function(e) {
         // body...
-        console.log(e);
-        alert("xhr error"+ e);
+        alert("xhr error"+ JSON.stringify(e));
     }
   
     xhr.send();

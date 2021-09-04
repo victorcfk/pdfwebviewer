@@ -1,7 +1,7 @@
 import React from "react";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import PDFJSWorker from "pdfjs-dist/legacy/build/pdf.worker.entry";
-import Utility from "../Utility";
+import Utility from "./Utility";
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
 const { useRef, useState, useEffect, useCallback } = React;
