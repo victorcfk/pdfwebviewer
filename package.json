@@ -6,6 +6,8 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "canvas": "^2.8.0",
+    "cors": "^2.8.5",
     "gulp-cli": "^2.3.0",
     "pdfjs-dist": "^2.9.359",
     "react": "^17.0.2",

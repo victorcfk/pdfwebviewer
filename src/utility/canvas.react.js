@@ -1,10 +1,10 @@
 import React from "react";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
 import PDFJSWorker from "pdfjs-dist/legacy/build/pdf.worker.entry";
+import Utility from "../Utility";
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
 const { useRef, useState, useEffect, useCallback } = React;
-
 
 function Canvas(props) {
   const canvasRef = useRef(null);
@@ -71,19 +71,24 @@ function Canvas(props) {
       return;
 
     setLoadingState("ONGOING");
-    pdfjsLib.getDocument(props.pdfpath).promise.then((pdf_new) => {
-      // setCanvas();
 
-      //Set PDFJS global object (so we can easily access in our page functions
-      setPdf(pdf_new);
+    Utility.getBinaryData(props.pdfpath,
+      
+      function(binaryResponse){
+        pdfjsLib.getDocument(binaryResponse).promise.then((pdf_new) => {
 
-      //How many pages it has
-      setNumPages(pdf_new.numPages);
-
-      setLoadingState("COMPLETED");
-
-      //render();
-    }).catch( (error)=>alert(error));
+          //Set PDFJS global object (so we can easily access in our page functions
+          setPdf(pdf_new);
+    
+          //How many pages it has
+          setNumPages(pdf_new.numPages);
+    
+          setLoadingState("COMPLETED");
+    
+          //render();
+        }).catch( (error)=>alert(error));
+      }
+      );  
   }, [props.pdfpath, loadingState, render]);
 
   return (

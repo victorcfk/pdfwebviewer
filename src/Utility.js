@@ -4,17 +4,62 @@
 // const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 
 export default class Utility {
-
   static urlAppender(prepend, url) {
     console.log(`url: `, url);
     url = regexParser(url);
     console.log(`parsed url: `, url);
 
-    url = `${prepend}${url}`;
-    console.log(`final url: `, url);
+    url = `${prepend}${encodeURI(url)}`;
+    console.log(`final url: `, encodeURI(url));
 
     return url;
   }
+
+  static convertToBase64(url) {
+    return new Promise((resolve, reject) => {
+      debugger;
+      const reader = new FileReader();
+
+      reader.readAsDataURL(url);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+    //    let dataURI = "data:text/plain;base64," +convertToBase64();
+  }
+
+  static getBinaryData (url, callback) {
+    // body...
+    var xhr = new XMLHttpRequest();
+    
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader("Access-Control-Allow-Origin", "*.amplifyapp.com/");
+    
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function(e) {
+        //binary form of ajax response,
+        callback(e.currentTarget.response);
+    };
+  
+    xhr.onerror = function  (e) {
+        // body...
+        console.log(e);
+        alert("xhr error"+ e);
+    }
+  
+    xhr.send();
+  }
+/*
+function callGetDocment (response) {
+  // body...
+
+  PDFJS.getDocument(response).then(function getPdfHelloWorld(_pdfDoc) {
+    pdfDoc = _pdfDoc;
+    renderPage(pageNum);
+  });
+}
+*/
+
+
 }
 
 function regexParser(url) {
