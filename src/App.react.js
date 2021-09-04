@@ -7,6 +7,7 @@ import "./App.css";
 const { useState, useEffect } = React;
 
 function App() {
+  
   const [PDFUrl, setPDFUrl] = useState("");
   const [iFrameLink, setIFrameLink] = useState("");
 
@@ -28,8 +29,7 @@ function App() {
         const appendedURL = Utility.urlAppender(GOOGLE_DOCS_URL, PDFUrl);
         window.location.href = appendedURL;
       } else if (btnTypeClicked === IFRAME_CLICK) {
-        const appendedURL = Utility.urlAppender(GOOGLE_DOCS_URL, PDFUrl);
-        setIFrameLink(appendedURL);
+        setIFrameLink(PDFUrl);
       }
     } catch (e) {
       console.log(e);
@@ -81,7 +81,9 @@ function App() {
         </div>
       </div>
       <div height={0.75 * height}>
-        <Canvas pdfpath="./bitcoin.pdf"></Canvas>
+          {iFrameLink? 
+            <Canvas pdfpath={iFrameLink} height={0.75 * height} width={width}></Canvas>:
+            <div></div>}
       </div>
     </div>
   );

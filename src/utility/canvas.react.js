@@ -1,56 +1,137 @@
-
-import React from 'react'
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf'
-import PDFJSWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry'
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker
+import React from "react";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+import PDFJSWorker from "pdfjs-dist/legacy/build/pdf.worker.entry";
+pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
 const { useRef, useState, useEffect, useCallback } = React;
 
-function Canvas(props){
+
+function Canvas(props) {
   const canvasRef = useRef(null);
 
-  const [pdfPath,setPdfPath] = useState("");
-  // const [canvas,setCanvas] = useState(null);
-  
-  const [pdf,setPdf] = useState(null);
-  const [currentPage,setCurrentPage] = useState(1);
-  const [zoom,setZoom] = useState(1);
-  
-  // useEffect(() => {
-  //     render();
-  // }, [currentPage,zoom, render]);
+  const [pdf, setPdf] = useState(null);
+  const [currentPageNum, setCurrentPageNum] = useState(1);
+  const [numPages, setNumPages] = useState(-1);
 
-  useEffect(() => {
+  const [zoom, setZoom] = useState(1.0);
 
-    pdfjsLib.getDocument(props.pdfpath).promise.then((pdf_new) => {
-      // setCanvas();
-      setPdf(pdf_new);
-      render();
+  const [renderingState,setRenderingState] = useState("COMPLETED");
+  const [loadingState,setLoadingState] = useState("COMPLETED");
 
+  const render = useCallback(() => {
+    if (!pdf) return;
+    if (renderingState === "ONGOING") return;
 
-      function render (){
-        if(!pdf)  return;
-    
-        pdf.getPage(currentPage).then((page) => {
-          
-          const viewport = page.getViewport(zoom);
-          viewport.width = 612;
-          viewport.height = 792;
-          canvasRef.current.width = viewport.width;
-          canvasRef.current.height = viewport.height;
-    
-          page.render({
-            canvasContext: canvasRef.current.getContext("2d"),
-            viewport: viewport,
-          });
-        });
+    setRenderingState("ONGOING");
+
+    pdf.getPage(currentPageNum)
+    .then(
+      function (page) {
+      // const viewport = page.getViewport(zoom);
+      const viewport = page.getViewport({ scale: zoom });
+
+      viewport.width = props.width;
+      viewport.height = props.height;
+      //viewport.zoom = zoom;
+      canvasRef.current.width = viewport.width;
+      canvasRef.current.height = viewport.height;
+      // canvasRef.current.cancel();
+
+      const thing = canvasRef.current.getContext("2d");
+
+      //Draw it on the canvas
+      
+      //Step 1: store a refer to the renderer
+      const pageRendering = page.render({
+        canvasContext: thing,
+        viewport: viewport,
+      });
+
+      //Step : hook into the pdf render complete event
+      const completeCallback = pageRendering._internalRenderTask.callback;
+
+      pageRendering._internalRenderTask.callback = function (error) {
+        //Step 2: what you want to do before calling the complete method                  
+        completeCallback.call(this, error);
+        //Step 3: do some more stuff
+        setRenderingState("COMPLETED");
       };
 
-    });
-    
-  }, [props.pdfpath,currentPage,pdf,zoom]);
+    })
+    .catch( (error)=>alert(error));
 
-  return <canvas ref={canvasRef} {...props} />;
-};
+  }, [currentPageNum, pdf, props.height, props.width, zoom, renderingState]);
+
+  useEffect(() => {
+    render();
+  }, [currentPageNum, pdf, zoom, render]);
+
+  useEffect(() => {
+    if(loadingState === "ONGOING")
+      return;
+
+    setLoadingState("ONGOING");
+    pdfjsLib.getDocument(props.pdfpath).promise.then((pdf_new) => {
+      // setCanvas();
+
+      //Set PDFJS global object (so we can easily access in our page functions
+      setPdf(pdf_new);
+
+      //How many pages it has
+      setNumPages(pdf_new.numPages);
+
+      setLoadingState("COMPLETED");
+
+      //render();
+    }).catch( (error)=>alert(error));
+  }, [props.pdfpath, loadingState, render]);
+
+  return (
+    <div>
+      <canvas ref={canvasRef} {...props} />
+      <button
+        id="go_previous"
+        onClick={() => {
+          setCurrentPageNum(Math.max(currentPageNum - 1, 1));
+        }}
+      >
+        Previous
+      </button>
+      <input 
+        id="current_page"
+        type="number"
+        value={currentPageNum}
+        onChange={()=>{}}
+         />
+      <button
+        id="go_next"
+        onClick={() => {
+          setCurrentPageNum(Math.min(currentPageNum + 1, numPages));
+        }}
+      >
+        Next
+      </button>
+
+      <div id="zoom_controls">
+        <button
+          id="zoom_in"
+          onClick={() => {
+            setZoom(zoom + 0.1);
+          }}
+        >
+          +
+        </button>
+        <button
+          id="zoom_out"
+          onClick={() => {
+            setZoom(zoom - 0.1);
+          }}
+        >
+          -
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default Canvas;
