@@ -4,22 +4,26 @@ const Instascan = require("instascan");
 export default class Utility {
   static urlAppender(prepend, url) {
     console.log(`url: `, url);
-    url = regexParser(url);
-    console.log(`parsed url: `, url);
-    console.log(`encoded url: `, encodeURI(url));
-    
-    url = `${prepend}${url}`;
-    console.log(`final url: `, url);
+    const parsed_url = regexParser(url);
+    console.log(`parsed url: `, parsed_url);
+    const encoded_url = encodeURI(parsed_url);
+    console.log(`encoded url: `, encodeURI(encoded_url));
 
-    return url;
+    const final_url = `${prepend}${encoded_url}`;
+    console.log(`final url: `, final_url);
+    return final_url;
   }
+  // https://docs.google.com/a/umd.edu/viewer?url=https://isotropic.org/papers/chicken.pdf&embedded=true
+  // https://docs.google.com/viewer?url=https://isotropic.org/papers/chicken.pdf&embedded=true
+  //  
 
   static getBinaryData(url, callback) {
     // body...
     var xhr = new XMLHttpRequest();
 
     xhr.open("GET", url, true);
-    xhr.setRequestHeader("Access-Control-Allow-Origin", "*.amplifyapp.com/");
+    xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+    xhr.setRequestHeader("Access-Control-Allow-Credentials", "true");
 
     xhr.responseType = "arraybuffer";
     xhr.onload = function (e) {
@@ -71,13 +75,17 @@ export default class Utility {
   }
 }
 
-function regexParser(url) {
+/**
+ * Extracts any pdf string in the uri
+ * @param uri A value representing an encoded URI.
+ */
+function regexParser(uri) {
   //find the last occurrence of http that is followed by a .pdf
   const regex1 = RegExp("http(?!.*http).+.pdf", "g");
-  const match = regex1.exec(url);
+  const match = regex1.exec(uri);
 
   if (match === null || match.length === 0) {
-    throw Error(`Did not find a valid pdf url link in : "${url}"`);
+    throw Error(`Did not find a valid pdf url link in : "${uri}"`);
   }
   return match[0];
 }

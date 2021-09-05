@@ -32,7 +32,8 @@ function App() {
     try {
       if (btnTypeClicked === NEW_WINDOW_CLICK) {
         const appendedURL = Utility.urlAppender(GOOGLE_DOCS_URL, PDFUrl);
-        window.location.href = appendedURL;
+        window.open(appendedURL, "_blank");
+
       } else if (btnTypeClicked === IFRAME_CLICK) {
         setIFrameLink(PDFUrl);
       }
